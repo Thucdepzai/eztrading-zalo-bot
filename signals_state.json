@@ -1,0 +1,25 @@
+{
+  "initialized": true,
+  "signals": {
+    "V8-9": {
+      "status": "CREATED",
+      "stop_loss": "93.32642927730605",
+      "updated_at": "2026-11-08T00:00:19.566876Z"
+    },
+    "V8-5": {
+      "status": "CLOSED",
+      "stop_loss": "74943.25468191225",
+      "updated_at": "2026-11-06T14:47:44.103885Z"
+    },
+    "SOLUSDT-20261008-bf4802e7": {
+      "status": "CLOSED",
+      "stop_loss": "109.59437449999999",
+      "updated_at": "2026-10-08T20:44:08.759336Z"
+    },
+    "ETHUSDT-20261007-35108c9e": {
+      "status": "CLOSED",
+      "stop_loss": "2486.8050000000003",
+      "updated_at": "2026-10-09T02:49:06.892706Z"
+    }
+  }
+}
