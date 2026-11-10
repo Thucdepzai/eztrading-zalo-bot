@@ -16,7 +16,7 @@ concurrency:
 jobs:
   monitor-signals:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 340
 
     steps:
       - name: Checkout repository
@@ -30,10 +30,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Signal Monitor Loop (50 minutes, 10s interval)
+      - name: Run Signal Monitor Loop (5 hours continuous, 10s interval)
         env:
           GITHUB_ACTIONS: "true"
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           ZALO_BOT_TOKEN: ${{ secrets.ZALO_BOT_TOKEN }}
           ZALO_CHAT_ID: ${{ secrets.ZALO_CHAT_ID }}
@@ -41,12 +41,12 @@ jobs:
           EZ_PASSWORD: ${{ secrets.EZ_PASSWORD }}
           EZ_TOKEN: ${{ secrets.EZ_TOKEN }}
           POLL_INTERVAL: "10"
-        run: python -u bot.py --cloud-loop 3000
+        run: python -u bot.py --cloud-loop 18000
 
       - name: Chain next 24/7 run seamlessly
         if: always()
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
         run: |
           curl -s -X POST \
