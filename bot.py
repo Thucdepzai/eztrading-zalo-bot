@@ -178,8 +178,14 @@ def poll_zalo_updates(bot_token, wait_timeout=3):
             data = resp.json()
             if data.get("ok") and data.get("result"):
                 res = data["result"]
-                msg_obj = res.get("message", {}) if isinstance(res, dict) else {}
-                cid = msg_obj.get("chat", {}).get("id")
+                msg_obj = {}
+                if isinstance(res, list) and len(res) > 0:
+                    last_item = res[-1]
+                    msg_obj = last_item.get("message") or last_item.get("channel_post") or {}
+                elif isinstance(res, dict):
+                    msg_obj = res.get("message") or res.get("channel_post") or {}
+
+                cid = msg_obj.get("chat", {}).get("id") or msg_obj.get("from", {}).get("id")
                 sender_name = msg_obj.get("from", {}).get("display_name", "Bạn")
                 txt = msg_obj.get("text", "")
                 if cid:
@@ -378,6 +384,34 @@ def handle_user_command(cfg, cid, text, name):
         return
 
     low = (text or "").lower().strip()
+
+    # Xử lý câu hỏi về TikTok @dollashin
+    if any(k in low for k in ["dang bai", "dang chua", "da dang", "post chua", "video chua", "bai chua"]):
+        msg_tt = (
+            "📢 [TIKTOK @dollashin - AUTO PILOT]\n"
+            "• Kênh: https://www.tiktok.com/@dollashin\n"
+            "• Trạng thái: 2 video 9:16 tiện ích & công nghệ đã dựng sẵn trên máy tính!\n"
+            "• Khung giờ tự động đăng bài: 11:30 & 19:30 hàng ngày.\n"
+            "• Cứ mỗi khi bạn mở máy tính, Bot sẽ tự động thực thi và thông báo về đây!"
+        )
+        send_zalo(cfg["ZALO_BOT_TOKEN"], cid, msg_tt)
+        return
+
+    # Xử lý câu hỏi tình hình chung / sao rồi / đến đâu rồi
+    if any(k in low for k in ["sao roi", "den dau roi", "tinh hinh", "the nao", "tien do", "status"]):
+        summary = (
+            f"🤖 [BÁO CÁO HỆ THỐNG SONG SONG (CLOUD + MÁY TÍNH)]\n"
+            f"1. 📈 EZTrading AI (Cloud 24/7):\n"
+            f"   • Đang quét tín hiệu liên tục 10s/lần trên GitHub Cloud.\n"
+            f"   • Tín hiệu đang mở: {len(open_sigs)} (nhắn 'all' để xem).\n\n"
+            f"2. 🎬 TikTok Affiliate @dollashin:\n"
+            f"   • Kênh: https://www.tiktok.com/@dollashin\n"
+            f"   • Trạng thái: Đã kết nối với Chrome và cài tự động ngầm khi bật máy!\n"
+            f"   • Lịch đăng hôm nay: 11:30 & 19:30"
+        )
+        send_zalo(cfg["ZALO_BOT_TOKEN"], cid, summary)
+        return
+
     if any(k in low for k in ["all", "tất cả", "tat ca", "open", "đang mở", "dang mo"]):
         if not open_sigs:
             send_zalo(cfg["ZALO_BOT_TOKEN"], cid, "📭 Hiện không có tín hiệu nào đang mở (OPEN) trên EZTrading AI.")
