@@ -406,10 +406,35 @@ def run_monitor_loop(max_duration_seconds=None):
     mode_str = f"Cloud Loop ({max_duration_seconds}s)" if max_duration_seconds else "24/7 Daemon"
     log(f"Bắt đầu theo dõi https://eztradingai.com/vi/signals [{mode_str}, chu kỳ {poll_interval}s]...")
 
+    last_watchdog_ts = 0
     while not STOP_REQUESTED:
         if max_duration_seconds and (time.time() - start_ts) >= max_duration_seconds:
             log(f"Đã hoàn thành chu kỳ Cloud ({max_duration_seconds}s), chuẩn bị chuyển sang phiên tiếp theo.")
             break
+
+        if (time.time() - last_watchdog_ts) > 300:
+            last_watchdog_ts = time.time()
+            gh_tok = os.environ.get("GH_TOKEN", "").strip()
+            if gh_tok:
+                try:
+                    r = requests.get(
+                        "https://api.github.com/repos/Thucdepzai/tuaf-auto-study/actions/runs?per_page=5",
+                        headers={"Authorization": f"Bearer {gh_tok}", "Accept": "application/vnd.github+json"},
+                        timeout=10,
+                    )
+                    if r.status_code == 200:
+                        runs = r.json().get("workflow_runs", [])
+                        active = [x for x in runs if x.get("status") in ("in_progress", "queued", "waiting")]
+                        if not active:
+                            requests.post(
+                                "https://api.github.com/repos/Thucdepzai/tuaf-auto-study/actions/workflows/auto_study.yml/dispatches",
+                                headers={"Authorization": f"Bearer {gh_tok}", "Accept": "application/vnd.github+json"},
+                                json={"ref": "main"},
+                                timeout=10,
+                            )
+                            log("Watchdog: Đã tự động đánh thức bot tuaf-auto-study!")
+                except Exception:
+                    pass
 
         try:
             # 1. Kiểm tra tin nhắn tới Bot bao token
