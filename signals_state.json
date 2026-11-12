@@ -25,6 +25,11 @@
       "status": "CLOSED",
       "stop_loss": "85.39275",
       "updated_at": "2026-11-11T17:19:04.805861Z"
+    },
+    "V8-11": {
+      "status": "CREATED",
+      "stop_loss": "89.52024386306131",
+      "updated_at": "2026-11-12T00:00:25.868001Z"
     }
   }
 }
