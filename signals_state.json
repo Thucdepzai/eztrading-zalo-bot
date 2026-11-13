@@ -2,9 +2,9 @@
   "initialized": true,
   "signals": {
     "V8-9": {
-      "status": "CREATED",
+      "status": "CLOSED",
       "stop_loss": "93.32642927730605",
-      "updated_at": "2026-11-08T00:00:19.566876Z"
+      "updated_at": "2026-11-13T03:23:04.956044Z"
     },
     "V8-5": {
       "status": "CLOSED",
